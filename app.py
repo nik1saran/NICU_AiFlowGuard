@@ -322,7 +322,7 @@ st.markdown(
         background:rgba(11,18,32,.98) !important;
         border:1px solid rgba(125,211,252,.28) !important;
         border-radius:18px !important;
-        overflow:hidden !important;
+        overflow:visible !important;
         margin-top:14px !important;
       }
       [data-testid="stExpander"] details {
@@ -333,19 +333,21 @@ st.markdown(
         padding:14px 18px !important;
         background:linear-gradient(135deg, rgba(15,23,42,.98), rgba(30,41,59,.92)) !important;
         border-bottom:1px solid rgba(125,211,252,.18) !important;
-        display:flex !important;
-        align-items:center !important;
-        gap:12px !important;
       }
       [data-testid="stExpander"] summary * {
         color:#f8fafc !important;
         font-weight:850 !important;
-        line-height:1.25 !important;
+        line-height:1.45 !important;
+        white-space:normal !important;
+        overflow:visible !important;
       }
       [data-testid="stExpander"] summary svg {
         color:#38e8ff !important;
         fill:#38e8ff !important;
-        flex-shrink:0 !important;
+      }
+      [data-testid="stExpander"] summary p {
+        margin:0 !important;
+        padding-left:8px !important;
       }
       [data-testid="stExpander"] [data-testid="stMarkdownContainer"] {
         background:transparent !important;
