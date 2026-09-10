@@ -80,10 +80,26 @@ st.markdown(
           linear-gradient(180deg, #030712 0%, #08111f 46%, #020617 100%);
         color: var(--text);
       }
-      .stApp, .stApp p, .stApp span, .stApp div, .stApp label, .stApp h1,
+      .stApp, .stApp p, .stApp label, .stApp h1,
       .stApp h2, .stApp h3, .stApp h4, .stApp h5, .stApp h6, .stApp li {
         color: var(--text);
         font-family: "Segoe UI", Inter, Arial, sans-serif;
+      }
+      [data-testid="stMarkdownContainer"], [data-testid="stMarkdownContainer"] * {
+        font-family: "Segoe UI", Inter, Arial, sans-serif;
+      }
+      [data-testid="stIconMaterial"] {
+        font-family: "Material Symbols Rounded", "Material Symbols Outlined" !important;
+        font-weight: normal !important;
+        font-style: normal !important;
+        letter-spacing: normal !important;
+        text-transform: none !important;
+        white-space: nowrap !important;
+        word-wrap: normal !important;
+        direction: ltr !important;
+        -webkit-font-feature-settings: "liga" !important;
+        -webkit-font-smoothing: antialiased !important;
+        font-feature-settings: "liga" !important;
       }
       .stApp h1, .stApp h2, .stApp h3 {
         color:#ffffff !important;
@@ -344,6 +360,31 @@ st.markdown(
       [data-testid="stExpander"] summary svg {
         color:#38e8ff !important;
         fill:#38e8ff !important;
+      }
+      [data-testid="stExpander"] summary [data-testid="stIconMaterial"] {
+        color:transparent !important;
+        flex:0 0 auto !important;
+        width:0 !important;
+        min-width:0 !important;
+        max-width:0 !important;
+        font-size:0 !important;
+        overflow:hidden !important;
+      }
+      [data-testid="stExpander"] summary > span:first-child {
+        width:26px !important;
+        min-width:26px !important;
+        max-width:26px !important;
+        display:inline-flex !important;
+        align-items:center !important;
+        justify-content:center !important;
+      }
+      [data-testid="stExpander"] summary > span:first-child::before {
+        content:">";
+        color:#38e8ff !important;
+        font-family:"Segoe UI", Inter, Arial, sans-serif !important;
+        font-size:20px !important;
+        font-weight:900 !important;
+        line-height:1 !important;
       }
       [data-testid="stExpander"] summary p {
         margin:0 !important;
@@ -747,7 +788,9 @@ def journey_timeline():
         showlegend=False,
         margin=dict(l=12, r=12, t=46, b=12),
     )
-    return apply_chart_theme(fig, 390)
+    fig = apply_chart_theme(fig, 390)
+    fig.update_layout(title_text="", showlegend=False, margin=dict(l=0, r=0, t=6, b=0))
+    return fig
 
 
 def executive_signal_ribbon():
@@ -822,7 +865,9 @@ def value_waterfall():
         increasing={"marker": {"color": COLORS["green"]}},
     ))
     fig.update_layout(title="Board story: modeled value unlocked by closed-loop care", yaxis_title="$M opportunity")
-    return apply_chart_theme(fig, 360)
+    fig = apply_chart_theme(fig, 390)
+    fig.update_layout(title_text="", showlegend=False, margin=dict(l=4, r=4, t=6, b=4))
+    return fig
 
 
 def exception_heatmap(df: pd.DataFrame):
@@ -1068,7 +1113,9 @@ def nicu_digital_twin(df: pd.DataFrame, horizon: int):
     for pod_i, pod in enumerate(pods):
         fig.add_annotation(x=pod_i * 4 + 1.5, y=2.15, text=pod, showarrow=False, font=dict(color="#e0f2fe", size=12))
     fig.update_layout(xaxis=dict(visible=False), yaxis=dict(visible=False, scaleanchor="x", scaleratio=1), height=390, showlegend=True)
-    return apply_chart_theme(fig, 390)
+    fig = apply_chart_theme(fig, 390)
+    fig.update_layout(title_text="", showlegend=False, margin=dict(l=0, r=0, t=6, b=0))
+    return fig
 
 
 def future_cone(intervention_strength: int, horizon: int):
@@ -1078,7 +1125,7 @@ def future_cone(intervention_strength: int, horizon: int):
     critical = max(2, 8 - intervention_strength * .08 + horizon * .05)
     total = stable + escalation + sepsis + critical
     vals = np.array([stable, escalation, sepsis, critical]) / total * 100
-    labels = ["Stable -> Step-down", "Respiratory escalation", "Sepsis workup", "Critical deterioration"]
+    labels = ["Stable", "Respiratory", "Sepsis", "Critical"]
     colors = [COLORS["green"], COLORS["amber"], COLORS["violet"], COLORS["red"]]
     fig = go.Figure()
     endpoints = [(4, 1.4, .65), (4, .35, .28), (4, -.65, .18), (4, -1.35, .08)]
@@ -1091,13 +1138,15 @@ def future_cone(intervention_strength: int, horizon: int):
             mode="lines+markers",
             line=dict(color=colors[i], width=max(5, val / 2.2)),
             marker=dict(size=[9, 8, 8, 11], color=colors[i]),
-            name=f"{label}: {val:.0f}%",
+            name=label,
             hovertemplate=f"{label}<br>Probability: {val:.1f}%<extra></extra>",
         ))
-    fig.add_trace(go.Scatter3d(x=[0], y=[0], z=[0], mode="markers+text", text=["Baby 07"], textposition="top center", marker=dict(size=18, color=COLORS["cyan"], line=dict(color="#ffffff", width=2)), name="Current state"))
+    fig.add_trace(go.Scatter3d(x=[0], y=[0], z=[0], mode="markers+text", text=["Now"], textposition="top center", marker=dict(size=18, color=COLORS["cyan"], line=dict(color="#ffffff", width=2)), name="Current"))
     fig.update_layout(
-        title="Future Cone - counterfactual trajectories",
-        height=500,
+        title=None,
+        height=390,
+        showlegend=False,
+        margin=dict(l=0, r=0, t=6, b=0),
         scene=dict(
             xaxis=dict(title="Time", visible=False),
             yaxis=dict(title="Trajectory", visible=False),
@@ -1106,7 +1155,7 @@ def future_cone(intervention_strength: int, horizon: int):
             camera=dict(eye=dict(x=1.6, y=1.8, z=.9)),
         ),
     )
-    return apply_chart_theme(fig, 500)
+    return apply_chart_theme(fig, 390)
 
 
 def exception_gravity_map(df: pd.DataFrame):
@@ -1208,9 +1257,9 @@ def clinical_event_galaxy():
     y = rng.normal(np.sin(cluster_idx) * .8, .24)
     anomaly = rng.random(n) > .91
     events = pd.DataFrame({"x": x, "y": y, "Cluster": [clusters[i] for i in cluster_idx], "Anomaly": anomaly})
-    fig = px.scatter(events, x="x", y="y", color="Cluster", symbol="Anomaly", opacity=.72, title="Clinical Event Galaxy - compressed pattern discovery")
+    fig = px.scatter(events, x="x", y="y", color="Cluster", opacity=.72)
     fig.update_traces(marker=dict(size=8, line=dict(width=.4, color="rgba(255,255,255,.45)")))
-    fig.update_layout(xaxis=dict(visible=False), yaxis=dict(visible=False), height=360)
+    fig.update_layout(xaxis=dict(visible=False), yaxis=dict(visible=False), height=390, showlegend=False, margin=dict(l=4, r=4, t=6, b=4))
     return apply_chart_theme(fig, 360)
 
 
@@ -1225,16 +1274,18 @@ def staffing_acuity_surface():
     ])
     fig = go.Figure(go.Surface(z=z, x=list(range(len(hours))), y=list(range(len(pods))), colorscale=[[0, "#0f172a"], [.45, "#0891b2"], [.75, "#fbbf24"], [1, "#fb7185"]]))
     fig.update_layout(
-        title="Staffing x Acuity Heat Surface",
-        height=420,
+        title=None,
+        height=390,
+        showlegend=False,
+        margin=dict(l=0, r=0, t=6, b=0),
         scene=dict(
-            xaxis=dict(title="Horizon", tickmode="array", tickvals=list(range(len(hours))), ticktext=hours),
-            yaxis=dict(title="Pod", tickmode="array", tickvals=list(range(len(pods))), ticktext=pods),
-            zaxis=dict(title="Mismatch"),
+            xaxis=dict(title="", tickmode="array", tickvals=list(range(len(hours))), ticktext=hours),
+            yaxis=dict(title="", tickmode="array", tickvals=list(range(len(pods))), ticktext=pods),
+            zaxis=dict(title=""),
             camera=dict(eye=dict(x=1.45, y=1.5, z=.95)),
         ),
     )
-    return apply_chart_theme(fig, 420)
+    return apply_chart_theme(fig, 390)
 
 
 def why_now_panel():
@@ -1503,20 +1554,58 @@ if page == "NICU Mission Control":
     with row3_c:
         st.plotly_chart(scenario_waterfall(readiness, scenario), width="stretch")
 
-    with st.expander("Advanced views: future cone, event galaxy, staffing-acuity terrain"):
-        adv1, adv2, adv3 = st.columns(3)
-        with adv1:
-            st.plotly_chart(future_cone(intervention_strength, horizon), width="stretch")
-        with adv2:
-            st.plotly_chart(clinical_event_galaxy(), width="stretch")
-        with adv3:
-            st.plotly_chart(staffing_acuity_surface(), width="stretch")
-
-    with st.expander("Executive narrative: what this dashboard proves"):
-        st.write(
-            "This dashboard is designed for fast executive storytelling: what is happening, why it matters, what is likely next, what blocks care, "
-            "who needs to act, and which Dragon Copilot-supported action clears the block."
+    st.markdown("#### Advanced views")
+    st.caption("Executive summary of future risk, signal intelligence, and staffing pressure.")
+    adv1, adv2, adv3 = st.columns(3)
+    with adv1:
+        st.markdown(
+            """
+            <div class="galaxy-card">
+              <div class="galaxy-title">Future cone</div>
+              <div class="metric-value">+12h</div>
+              <div class="galaxy-copy">Projects where pressure is forming next, before it becomes an escalation.</div>
+              <div class="agent-chip">Predictive view</div><div class="agent-chip">Capacity risk</div>
+            </div>
+            """,
+            unsafe_allow_html=True,
         )
+    with adv2:
+        st.markdown(
+            """
+            <div class="galaxy-card">
+              <div class="galaxy-title">Clinical event galaxy</div>
+              <div class="metric-value">280</div>
+              <div class="galaxy-copy">Compresses cross-system events into recognizable patterns and exception clusters.</div>
+              <div class="agent-chip">Pattern discovery</div><div class="agent-chip">Signal triage</div>
+            </div>
+            """,
+            unsafe_allow_html=True,
+        )
+    with adv3:
+        st.markdown(
+            """
+            <div class="galaxy-card">
+              <div class="galaxy-title">Staffing x acuity terrain</div>
+              <div class="metric-value">91</div>
+              <div class="galaxy-copy">Highlights role mismatch, acuity pressure, and where leadership attention is needed.</div>
+              <div class="agent-chip">Acuity pressure</div><div class="agent-chip">Staffing fit</div>
+            </div>
+            """,
+            unsafe_allow_html=True,
+        )
+
+    st.markdown(
+        """
+        <div class="galaxy-card" style="margin-top:16px;">
+          <div class="galaxy-title">Executive narrative: what this dashboard proves</div>
+          <div class="galaxy-copy">
+            This dashboard is designed for fast executive storytelling: what is happening, why it matters,
+            what is likely next, what blocks care, who needs to act, and which Dragon Copilot-supported action clears the block.
+          </div>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
 
 
 elif page == "Guardian Command Center":
