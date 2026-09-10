@@ -713,11 +713,11 @@ def bullet(label, actual, target, danger=85):
 
 
 def apply_chart_theme(fig, height=None):
+    existing_title = fig.layout.title.text
     fig.update_layout(
         paper_bgcolor="rgba(11,18,32,.96)",
         plot_bgcolor="rgba(3,7,18,.50)",
         font=dict(family="Segoe UI, Inter, Arial", color=COLORS["text"], size=13),
-        title=dict(font=dict(color="#ffffff", size=16), x=.02, xanchor="left", y=.96),
         legend=dict(
             orientation="h",
             yanchor="bottom",
@@ -743,6 +743,8 @@ def apply_chart_theme(fig, height=None):
         ),
         hoverlabel=dict(bgcolor="#020617", bordercolor="#38e8ff", font=dict(color="#f8fafc", size=13)),
     )
+    if existing_title:
+        fig.update_layout(title=dict(text=existing_title, font=dict(color="#ffffff", size=16), x=.02, xanchor="left", y=.96))
     if height:
         fig.update_layout(height=height)
     return fig
@@ -1143,7 +1145,7 @@ def future_cone(intervention_strength: int, horizon: int):
         ))
     fig.add_trace(go.Scatter3d(x=[0], y=[0], z=[0], mode="markers+text", text=["Now"], textposition="top center", marker=dict(size=18, color=COLORS["cyan"], line=dict(color="#ffffff", width=2)), name="Current"))
     fig.update_layout(
-        title=None,
+        title=dict(text=""),
         height=390,
         showlegend=False,
         margin=dict(l=0, r=0, t=6, b=0),
@@ -1274,7 +1276,7 @@ def staffing_acuity_surface():
     ])
     fig = go.Figure(go.Surface(z=z, x=list(range(len(hours))), y=list(range(len(pods))), colorscale=[[0, "#0f172a"], [.45, "#0891b2"], [.75, "#fbbf24"], [1, "#fb7185"]]))
     fig.update_layout(
-        title=None,
+        title=dict(text=""),
         height=390,
         showlegend=False,
         margin=dict(l=0, r=0, t=6, b=0),
@@ -1555,44 +1557,16 @@ if page == "NICU Mission Control":
         st.plotly_chart(scenario_waterfall(readiness, scenario), width="stretch")
 
     st.markdown("#### Advanced views")
-    st.caption("Executive summary of future risk, signal intelligence, and staffing pressure.")
-    adv1, adv2, adv3 = st.columns(3)
+    st.caption("Future cone, event galaxy, and staffing-acuity terrain.")
+    adv1, adv2 = st.columns([1, 1])
     with adv1:
-        st.markdown(
-            """
-            <div class="galaxy-card">
-              <div class="galaxy-title">Future cone</div>
-              <div class="metric-value">+12h</div>
-              <div class="galaxy-copy">Projects where pressure is forming next, before it becomes an escalation.</div>
-              <div class="agent-chip">Predictive view</div><div class="agent-chip">Capacity risk</div>
-            </div>
-            """,
-            unsafe_allow_html=True,
-        )
+        st.markdown('<div class="galaxy-title">Future cone</div>', unsafe_allow_html=True)
+        st.plotly_chart(future_cone(intervention_strength, horizon), width="stretch")
     with adv2:
-        st.markdown(
-            """
-            <div class="galaxy-card">
-              <div class="galaxy-title">Clinical event galaxy</div>
-              <div class="metric-value">280</div>
-              <div class="galaxy-copy">Compresses cross-system events into recognizable patterns and exception clusters.</div>
-              <div class="agent-chip">Pattern discovery</div><div class="agent-chip">Signal triage</div>
-            </div>
-            """,
-            unsafe_allow_html=True,
-        )
-    with adv3:
-        st.markdown(
-            """
-            <div class="galaxy-card">
-              <div class="galaxy-title">Staffing x acuity terrain</div>
-              <div class="metric-value">91</div>
-              <div class="galaxy-copy">Highlights role mismatch, acuity pressure, and where leadership attention is needed.</div>
-              <div class="agent-chip">Acuity pressure</div><div class="agent-chip">Staffing fit</div>
-            </div>
-            """,
-            unsafe_allow_html=True,
-        )
+        st.markdown('<div class="galaxy-title">Clinical event galaxy</div>', unsafe_allow_html=True)
+        st.plotly_chart(clinical_event_galaxy(), width="stretch")
+    st.markdown('<div class="galaxy-title" style="margin-top:14px;">Staffing x acuity terrain</div>', unsafe_allow_html=True)
+    st.plotly_chart(staffing_acuity_surface(), width="stretch")
 
     st.markdown(
         """
