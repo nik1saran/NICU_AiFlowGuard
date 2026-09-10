@@ -1,0 +1,27 @@
+[
+  {
+    "bed_id": "Bed 03",
+    "speaker": "Neonatologist",
+    "text": "Please follow up with cardiology because the murmur consult has not been acknowledged. We need an answer within 45 minutes before feeding advancement.",
+    "minutes_since_mentioned": 48
+  },
+  {
+    "bed_id": "Bed 05",
+    "speaker": "Resident",
+    "text": "Review the bilirubin trend before the evening medication adjustment. Nursing is waiting for the plan.",
+    "minutes_since_mentioned": 22
+  },
+  {
+    "bed_id": "Bed 07",
+    "speaker": "Charge Nurse",
+    "text": "Prepare a family update for the parents before afternoon rounds. Make sure it is clinician reviewed before anyone speaks with them.",
+    "minutes_since_mentioned": 15
+  },
+  {
+    "bed_id": "Bed 02",
+    "speaker": "Fellow",
+    "text": "Respiratory therapy should confirm the oxygen wean plan after the next blood gas result.",
+    "minutes_since_mentioned": 8
+  }
+]
+
