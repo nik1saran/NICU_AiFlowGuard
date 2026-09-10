@@ -18,7 +18,7 @@ streamlit run app.py
 ## Deploy on Streamlit Community Cloud
 
 ```text
-Repository: nisa_microsoft/FlowguardAi
+Repository: nik1saran/NICU_AiFlowGuard
 Branch: main
 Main file path: app.py
 ```
